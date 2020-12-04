@@ -70,6 +70,9 @@
       > classe "mine"
     - Afficher la photo de l'utilisateur auteur devant chaque message
 
+- Externaliser chaque message dans un composant <Message> dédié
+  > component: v-bind/props, template
+
 - Pouvoir envoyer un message  (Conversation)
   > $client.postMessage
 
