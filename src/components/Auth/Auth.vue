@@ -11,6 +11,9 @@
         <form class="ui large form">
           <div v-if="authenticating" class="ui attached segment">
             <div>Authentification...</div>
+            <i
+              ><router-link to="/server">{{ endpoint }}</router-link></i
+            >
           </div>
           <div v-else>
             <div class="ui attached segment">
@@ -42,8 +45,11 @@
                 Connexion
               </div>
             </div>
-            <div class="ui bottom attached segment">
+            <div class="ui attached segment">
               La première connexion créer un compte.
+            </div>
+            <div class="ui bottom attached segment">
+              <router-link to="/server">Configuration du serveur</router-link>
             </div>
 
             <div class="ui error message"></div>
@@ -61,6 +67,9 @@ export default {
   name: "Auth",
   data() {
     return {
+      endpoint:
+        localStorage.getItem("server") ||
+        "wss://teach-vue-chat-server.glitch.me",
       username: localStorage.getItem("username") || "",
       password: ""
     };
