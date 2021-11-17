@@ -55,7 +55,7 @@
       <!--      // selected-->
 
       <div
-        v-for="conversation in conversations"
+        v-for="conversation in orderedMessages()"
         :key="conversation.id"
         class="conversation"
         :title="conversation.title"
@@ -93,6 +93,10 @@ export default {
   },
   methods: {
     ...mapActions(["deauthenticate"]),
+      orderedMessages(){
+        console.log((Object.values(this.conversations)).sort((a, b) => new Date(a.updated_at).getTime() < new Date(b.updated_at).getTime()));
+        return (Object.values(this.conversations)).sort((a, b) => new Date(a.updated_at).getTime() < new Date(b.updated_at).getTime());
+      },
     openCommunity() {
       router.push({ name: "Community" });
     },
@@ -129,8 +133,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["user", "conversations", "users"])
-  }
+    ...mapGetters(["user", "conversations", "users"]),
+  },
 };
 </script>
 
