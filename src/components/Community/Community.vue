@@ -4,6 +4,7 @@
       <div class="ui fluid search">
         <div class="ui icon input">
           <input
+            v-model="searchContent"
             class="prompt"
             type="text"
             placeholder="Rechercher un utilisateur"
@@ -16,7 +17,7 @@
     <div class="users">
       <div
         v-bind:class="{ selected: selectedUsers.includes(user) }"
-        v-for="user in users"
+        v-for="user in getUserSearched()"
         :key="user.username"
         class="user"
         @click="clickUser(user)"
@@ -45,7 +46,8 @@ export default {
   name: "Community",
   data() {
     return {
-      selectedUsers: []
+      selectedUsers: [],
+      searchContent: ""
     };
   },
   methods: {
@@ -76,6 +78,10 @@ export default {
       } else {
         this.selectedUsers.push(user);
       }
+    },
+
+    getUserSearched() { 
+      return this.users.filter(searched => searched.username.toLowerCase().includes(this.searchContent.toLowerCase()))
     }
   },
   computed: {
