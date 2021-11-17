@@ -140,11 +140,13 @@
             <div class="ui fluid search">
               <div class="ui icon input">
                 <input
+                  v-model="messageContent"
                   class="prompt"
                   type="text"
                   placeholder="Rédiger un message"
+                  @keyup.enter="sendMessage()"
                 />
-                <i class="send icon"></i>
+                <i class="send icon" @click="sendMessage()"></i>
               </div>
             </div>
           </div>
@@ -166,6 +168,7 @@ export default {
   components: { Group },
   data() {
     return {
+      messageContent: "",
       groupPanel: false
     };
   },
@@ -179,7 +182,12 @@ export default {
     ...mapGetters(["conversation", "user", "users"])
   },
   methods: {
-    ...mapActions([]),
+    ...mapActions(["postMessage"]),
+
+    sendMessage() {
+      this.postMessage(this.conversation.id, this.messageContent);
+      this.messageContent = "";
+    },
 
     getUserByName(name) {
       return this.users.filter(user => user.username === name).at(0);

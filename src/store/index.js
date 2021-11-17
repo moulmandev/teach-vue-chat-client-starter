@@ -142,8 +142,33 @@ export default new Vuex.Store({
       });
     },
 
+    postMessage({ commit }, conversation_id, content) {
+      Vue.prototype.$client.postMessage(conversation_id, content).then(({ message }) => {
+          commit("addMessage", conversation_id, message);
+        });
+    },
+
     createOneToOneConversation({ commit }, username) {
       const promise = Vue.prototype.$client.getOrCreateOneToOneConversation(
+        username
+      );
+
+      promise.then(({ conversation }) => {
+        // commit("upsertConversation", {
+        //   conversation
+        // });
+
+        router.push({
+          name: "Conversation",
+          params: { id: conversation.id }
+        });
+      });
+
+      return promise;
+    },
+
+    createManyToManyConversation({ commit }, username) {
+      const promise = Vue.prototype.$client.createManyToManyConversation(
         username
       );
 
