@@ -48,66 +48,29 @@
           </div>
         </div>
       </div>
-      <div class="conversation new" title="Bob" @click="openConversation(0)">
-        <a class="avatar">
-          <img src="https://source.unsplash.com/7omHUGhhmZ0/100x100" />
-        </a>
-        <div class="content">
-          <div class="metadata">
-            <div class="title"><i class="ui small icon circle"> </i> Bob</div>
-            <span class="time">01:30:58</span>
-          </div>
-          <div class="text">C'est vraiment super Alice !</div>
-        </div>
-      </div>
+
+      <!--      // available-->
+      <!--      // new-->
+      <!--      // selected-->
+
       <div
+        v-for="conversation in conversations"
+        :key="conversation.id"
         class="conversation"
-        title="Groupe: Gael, Bob"
-        @click="openConversation(0)"
+        :title="conversation.title"
+        @click="openConversation(conversation.id)"
       >
         <a class="avatar">
-          <span>
-            <i class="users icon"> </i>
-          </span>
+          <img :src="getConversationPicture(conversation)"/>
         </a>
         <div class="content">
           <div class="metadata">
-            <div class="title">Groupe: Gael, Bob</div>
-            <span class="time">01:36:38</span>
+            <div class="title">
+              <i class="ui small icon circle"> </i>{{ conversation.title }}
+            </div>
+            <span class="time">{{ conversation.updated_at.toLocaleString() }}</span>
           </div>
-          <div class="text">Incroyable !</div>
-        </div>
-      </div>
-      <div
-        class="conversation available"
-        title="Cha"
-        @click="openConversation(0)"
-      >
-        <a class="avatar">
-          <img src="https://source.unsplash.com/8wbxjJBrl3k/100x100" />
-        </a>
-        <div class="content">
-          <div class="metadata">
-            <div class="title"><i class="ui small icon circle"> </i> Cha</div>
-            <span class="time">01:47:50</span>
-          </div>
-          <div class="text">Nouvelle conversation</div>
-        </div>
-      </div>
-      <div
-        class="conversation selected"
-        title="Derek"
-        @click="openConversation(0)"
-      >
-        <a class="avatar">
-          <img src="https://source.unsplash.com/FUcupae92P4/100x100" />
-        </a>
-        <div class="content">
-          <div class="metadata">
-            <div class="title">Derek</div>
-            <span class="time">01:48:00</span>
-          </div>
-          <div class="text">Nouvelle conversation</div>
+          <div class="text">{{ getMessageContent(conversation.messages) }}</div>
         </div>
       </div>
     </div>
@@ -135,10 +98,27 @@ export default {
     },
     openConversation(id) {
       router.push({ name: "Conversation", params: { id } });
+    },
+    getUserByName(name) {
+      return this.users.find(user => user.username === name);
+    },
+    getConversationPicture(conversation) {
+      if (conversation.participants.length === 2) {
+        let other = conversation.participants.find(participant => participant !== this.user.username);
+        return this.getUserByName(other).picture_url;
+      } else {
+        return "https://source.unsplash.com/7omHUGhhmZ0/100x100";
+      }
+    },
+    getMessageContent(messages) {
+      if (messages && messages.length > 0) {
+        return messages[messages.length - 1].content;
+      }
+      return "Nouvelle conversation";
     }
   },
   computed: {
-    ...mapGetters(["user", "conversations"])
+    ...mapGetters(["user", "conversations", "users"])
   }
 };
 </script>

@@ -14,49 +14,23 @@
       </div>
     </div>
     <div class="users">
-      <div class="selected user">
-        <img src="https://source.unsplash.com/7omHUGhhmZ0/100x100" /><span
-          class=""
-          >Bob</span
-        >
-      </div>
-      <div class="user">
-        <img src="https://source.unsplash.com/8wbxjJBrl3k/100x100" /><span
-          class=""
-          >Cha</span
-        >
-      </div>
-      <div class="user">
-        <img src="https://source.unsplash.com/FUcupae92P4/100x100" /><span
-          class="available"
-          >Derek</span
-        >
-      </div>
-      <div class="user">
-        <img src="https://source.unsplash.com/4U1x6459Q-s/100x100" /><span
-          class=""
-          >Emilio</span
-        >
-      </div>
-      <div class="selected user">
-        <img src="https://source.unsplash.com/3402kvtHhOo/100x100" /><span
-          class="available"
-          >Fabrice</span
-        >
-      </div>
-      <div class="user">
-        <img src="https://source.unsplash.com/OYH7rc2a3LA/100x100" /><span
-          class=""
-          >Gael</span
-        >
+      <div
+        v-bind:class="{ selected: selectedUsers.includes(user) }"
+        v-for="user in users"
+        :key="user.username"
+        class="user"
+        @click="clickUser(user)"
+      >
+        <img :src="user.picture_url" alt="" />
+        <span class="">{{ user.username }}</span>
       </div>
     </div>
 
-    <div class="actions">
+    <div v-if="selectedUsers.length" class="actions">
       <button class="ui primary big button" @click="openConversation">
         <i class="conversation icon"></i>
         <span>
-          Ouvrir la conversation (2)
+          Ouvrir la conversation ({{ selectedUsers.length }})
         </span>
       </button>
     </div>
@@ -65,20 +39,43 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import Vue from "vue";
 
 export default {
   name: "Community",
   data() {
-    return {};
+    return {
+      selectedUsers: []
+    };
   },
   methods: {
-    ...mapActions(["createOneToOneConversation"]),
-    openConversation() {
-      let promise = this.createOneToOneConversation("Alice");
+    ...mapActions([
+      "createOneToOneConversation",
+      "createManyToManyConversation"
+    ]),
 
-      promise.finally(() => {
-        console.log("Conversation ouverte !");
-      });
+    openConversation() {
+      if (this.selectedUsers.length === 0) return;
+      if (this.selectedUsers.length > 1) {
+        let promise = this.createManyToManyConversation(this.selectedUsers.map(user => user.username));
+        promise.finally(() => {
+          console.log("Conversation ouverte !");
+        });
+      } else {
+        let promise = this.createOneToOneConversation(this.selectedUsers[0].username);
+        promise.finally(() => {
+          console.log("Conversation ouverte !");
+        });
+      }
+    },
+
+    clickUser(user) {
+      if (this.selectedUsers.includes(user)) {
+        const index = this.selectedUsers.indexOf(user);
+        Vue.delete(this.selectedUsers, index);
+      } else {
+        this.selectedUsers.push(user);
+      }
     }
   },
   computed: {

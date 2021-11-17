@@ -28,21 +28,19 @@ export default new Vuex.Store({
       return state.user;
     },
     users(state) {
-      return state.users.map(user => ({
-        ...user
-        //TODO
-      }));
+      return state.users.filter(user => user.username !== state.user.username);
     },
+
     conversations(state) {
-      return state.conversations.map(conversation => {
-        return {
-          ...conversation
-          //TODO
-        };
-      });
+      return state.conversations.filter(conversation =>
+        conversation.participants.includes(state.user.username)
+      );
     },
+
     conversation(state, getters) {
-      //TODO
+      return state.conversations.filter(conversation =>
+          conversation.id === state.currentConversationId
+      ).at(0);
     }
   },
   mutations: {
@@ -61,6 +59,10 @@ export default new Vuex.Store({
       state.users = users;
     },
 
+    setConversations(state, conversations) {
+      state.conversations = conversations;
+    },
+
     upsertUser(state, { user }) {
       const localUserIndex = state.users.findIndex(
         _user => _user.username === user.username
@@ -76,8 +78,24 @@ export default new Vuex.Store({
     },
 
     upsertConversation(state, { conversation }) {
-      //TODO
-    }
+      const localConversationIndex = state.conversations.findIndex(
+        _conversation => _conversation.id === conversation.id
+      );
+
+      if (localConversationIndex !== -1) {
+        Vue.set(state.conversations, localConversationIndex, conversation);
+      } else {
+        state.users.push({
+          ...conversation
+        });
+      }
+    },
+
+    addMessage(state, { conversation_id, message }) {
+      const conv = state.conversations.find(conversation => conversation.id === conversation_id);
+      conv.messages.push(message);
+      this.upsertConversation(state, conv);
+    },
   },
   actions: {
     authenticate({ commit, dispatch }, { username, password }) {
@@ -109,12 +127,18 @@ export default new Vuex.Store({
 
     initializeAfterAuthentication({ dispatch }) {
       dispatch("fetchUsers");
-      //TODO: dispatch("fetchConversations");
+      dispatch("fetchConversations");
     },
 
     fetchUsers({ commit }) {
       Vue.prototype.$client.getUsers().then(({ users }) => {
         commit("setUsers", users);
+      });
+    },
+
+    fetchConversations({ commit }) {
+      Vue.prototype.$client.getConversations().then(({ conversations }) => {
+        commit("setConversations", conversations);
       });
     },
 

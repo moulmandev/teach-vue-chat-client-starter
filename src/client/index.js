@@ -1,7 +1,7 @@
 import MetinetChatClient from "teach-vue-chat-client-library";
 
 const endpoint =
-  localStorage.getItem("server") || "wss://teach-vue-chat-server.glitch.me";
+  localStorage.getItem("server") || "wss://messenger.moulmandev.fr";
 
 export let client = new MetinetChatClient(endpoint);
 
@@ -40,7 +40,7 @@ export default function install(Vue, store) {
   });
 
   client.on("messagePosted", async ({ conversation_id, message }) => {
-    //TODO
+    store.commit("addMessage", { conversation_id, message });
   });
 
   client.on("messageDelivered", async ({ conversation_id, message }) => {
