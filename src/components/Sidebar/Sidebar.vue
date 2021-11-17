@@ -59,6 +59,7 @@
         :key="conversation.id"
         class="conversation"
         :title="conversation.title"
+        v-bind:class="{selected: isSelected(conversation)}"
         @click="openConversation(conversation.id)"
       >
         <a class="avatar">
@@ -86,7 +87,8 @@ export default {
   name: "Sidebar",
   data() {
     return {
-      search: ""
+      search: "",
+      conversationClicked : null
     };
   },
   methods: {
@@ -98,6 +100,7 @@ export default {
       router.push({ name: "Search" });
     },
     openConversation(id) {
+      this.conversationClicked = id;  
       router.push({ name: "Conversation", params: { id } });
     },
     getUserByName(name) {
@@ -116,6 +119,13 @@ export default {
         return messages[messages.length - 1].content;
       }
       return "Nouvelle conversation";
+    },
+    isSelected(conversation){
+      if(this.conversationClicked === conversation.id){
+        return true;
+      }
+      else
+        return false;
     }
   },
   computed: {
