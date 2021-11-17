@@ -131,7 +131,7 @@
           <div class="wrapper">
             <p>
               <i title="Abandonner" class="circular times small icon link"></i>
-              Répondre à Alice :
+              Répondre à Alice
               <span>
                 On peut même éditer ou supprimer des messages !
               </span>
@@ -185,7 +185,11 @@ export default {
     ...mapActions(["postMessage"]),
 
     sendMessage() {
-      this.postMessage(this.conversation.id, this.messageContent);
+      console.log("vue : " + this.messageContent);
+      this.postMessage({
+        conversation_id: this.conversation.id,
+        content: this.messageContent
+      });
       this.messageContent = "";
     },
 

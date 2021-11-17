@@ -49,6 +49,7 @@
         </div>
       </div>
 
+<!--      TODO: implements class with v-bind  -->
       <!--      // available-->
       <!--      // new-->
       <!--      // selected-->

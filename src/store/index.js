@@ -85,7 +85,7 @@ export default new Vuex.Store({
       if (localConversationIndex !== -1) {
         Vue.set(state.conversations, localConversationIndex, conversation);
       } else {
-        state.users.push({
+        state.conversations.push({
           ...conversation
         });
       }
@@ -142,8 +142,11 @@ export default new Vuex.Store({
       });
     },
 
-    postMessage({ commit }, conversation_id, content) {
-      Vue.prototype.$client.postMessage(conversation_id, content).then(({ message }) => {
+    postMessage({ commit }, { conversation_id, content }) {
+      console.log({ conversation_id, content });
+      Vue.prototype.$client
+        .postMessage(conversation_id, content)
+        .then(({ message }) => {
           commit("addMessage", conversation_id, message);
         });
     },
