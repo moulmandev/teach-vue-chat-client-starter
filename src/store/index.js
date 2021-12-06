@@ -28,7 +28,7 @@ export default new Vuex.Store({
       return state.user;
     },
     users(state) {
-      return state.users.filter(user => user.username !== state.user.username);
+      return state.users;
     },
 
     conversations(state) {
@@ -38,6 +38,9 @@ export default new Vuex.Store({
     },
 
     conversation(state, getters) {
+      console.log("toto : " + state.conversations.filter(conversation =>
+          conversation.id === state.currentConversationId
+      ).at(0));
       return state.conversations.filter(conversation =>
           conversation.id === state.currentConversationId
       ).at(0);
@@ -91,12 +94,21 @@ export default new Vuex.Store({
       }
     },
 
-    addMessage(state, { conversation_id, message }) {
-      const conv = state.conversations.find(conversation => conversation.id === conversation_id);
-      conv.messages.push(message);
-      this.upsertConversation(state, conv);
+    upsertMessages(state, { conversation_id, message }) {
+      const localConversationIndex = state.conversations.findIndex(_conversation => _conversation.id === conversation_id);
+      if (localConversationIndex !== -1) {
+        const localMessageIndex = state.conversations[localConversationIndex].messages.findIndex(_message => _message.id === message.id);
+        if (localMessageIndex !== -1) {
+          Vue.set(state.conversations[localConversationIndex].messages, localMessageIndex, message);
+        } else {
+          state.conversations[localConversationIndex].messages.push({
+            ...message
+          });
+        }
+      }
     },
   },
+
   actions: {
     authenticate({ commit, dispatch }, { username, password }) {
       if (!username || !password) {
@@ -147,7 +159,7 @@ export default new Vuex.Store({
       Vue.prototype.$client
         .postMessage(conversation_id, content)
         .then(({ message }) => {
-          commit("addMessage", conversation_id, message);
+          commit("upsertMessages", conversation_id, message);
         });
     },
 

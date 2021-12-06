@@ -62,6 +62,7 @@
         v-bind:class="{selected: isSelected(conversation)}"
         @click="openConversation(conversation.id)"
       >
+      
         <a class="avatar">
           <img :src="getConversationPicture(conversation)"/>
         </a>
@@ -71,7 +72,8 @@
               <i class="ui small icon circle"> </i><span v-if="conversation.type === 'one_to_one'">{{ getConversationOneToOne(conversation) }}</span>
               <span v-else-if="conversation.type === 'many_to_many'">{{ getConversationManyToMany(conversation)}}</span>
             </div>
-            <span class="time">{{ conversation.updated_at.toLocaleString() }}</span>
+            <span class="time">{{ dateFormat(conversation.updated_at).toString()}}</span>
+
           </div>
           <div class="text">{{ getMessageContent(conversation.messages) }}</div>
         </div>
@@ -95,8 +97,7 @@ export default {
   methods: {
     ...mapActions(["deauthenticate"]),
       orderedMessages(){
-        console.log((Object.values(this.conversations)).sort((a, b) => new Date(a.updated_at).getTime() < new Date(b.updated_at).getTime()));
-        return (Object.values(this.conversations)).sort((a, b) => new Date(a.updated_at).getTime() < new Date(b.updated_at).getTime());
+        return (this.conversations).sort((a, b) => (Date.parse(b.updated_at) - (Date.parse(a.updated_at) )));
       },
     openCommunity() {
       router.push({ name: "Community" });
@@ -146,6 +147,9 @@ export default {
       }
       else
         return false;
+    },
+    dateFormat(date){
+      return new Date(date).toLocaleString('fr-FR', { timeZone: 'UTC' });
     }
   },
   computed: {
