@@ -68,7 +68,8 @@
         <div class="content">
           <div class="metadata">
             <div class="title">
-              <i class="ui small icon circle"> </i>{{ conversation.title }}
+              <i class="ui small icon circle"> </i><span v-if="conversation.type === 'one_to_one'">{{ getConversationOneToOne(conversation) }}</span>
+              <span v-else-if="conversation.type === 'many_to_many'">{{ getConversationManyToMany(conversation)}}</span>
             </div>
             <span class="time">{{ conversation.updated_at.toLocaleString() }}</span>
           </div>
@@ -118,6 +119,21 @@ export default {
         return "https://source.unsplash.com/7omHUGhhmZ0/100x100";
       }
     },
+    getConversationManyToMany(conversation){
+      if(conversation.participants.length > 2){
+          let participant = '';
+          for(let participantUser of conversation.participants){
+              participant += participantUser + ', ';
+          }
+          return participant;
+      }
+    },
+    getConversationOneToOne(conversation){
+        if (conversation.participants.length === 2) {
+          let other = conversation.participants.find(participant => participant !== this.user.username);
+          return this.getUserByName(other).username;
+        }
+    }, 
     getMessageContent(messages) {
       if (messages && messages.length > 0) {
         return messages[messages.length - 1].content;

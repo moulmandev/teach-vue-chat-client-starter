@@ -13,7 +13,10 @@
       <div class="title">
         <div class="ui compact">
           <i class="icon circle"></i>
-          <span>{{ conversation.title }}</span>
+          <span
+          v-if="conversation.type === 'one_to_one'">{{ getConversationOneToOne(conversation) }}</span>
+          <span 
+          v-else-if="conversation.type === 'many_to_many'">{{ getConversationManyToMany(conversation)}}</span>
           <div class="ui simple dropdown item">
             <i class="vertical ellipsis icon"></i>
 
@@ -200,6 +203,21 @@ export default {
       if (conversation.participants.length === 2) {
         let other = conversation.participants.find(participant => participant !== this.user.username);
         return this.getUserByName(other).picture_url;
+      }
+    },
+    getConversationOneToOne(conversation){
+        if (conversation.participants.length === 2) {
+          let other = conversation.participants.find(participant => participant !== this.user.username);
+          return this.getUserByName(other).username;
+        }
+    }, 
+    getConversationManyToMany(conversation){
+      if(conversation.participants.length > 2){
+          let participant = '';
+          for(let participantUser of conversation.participants){
+              participant += participantUser + ', ';
+          }
+          return participant;
       }
     },
     scrollBottom() {
