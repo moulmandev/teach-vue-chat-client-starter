@@ -217,7 +217,7 @@ export default {
           for(let participantUser of conversation.participants){
               participant += participantUser + ', ';
           }
-          return participant;
+          return participant.slice(0, -2);
       }
     },
     scrollBottom() {
