@@ -96,8 +96,6 @@ export default {
   methods: {
     ...mapActions(["deauthenticate"]),
       orderedMessages(){
-        console.log("la date de la MAJ est le "+  Date.parse(this.conversations[1].updated_at));
-        console.log((Object.values(this.conversations)).sort((a, b) =>  Date.parse(a.updated_at) <  Date.parse(b.updated_at)));
         return (this.conversations).sort((a, b) => (Date.parse(b.updated_at) - (Date.parse(a.updated_at) )));
       },
     openCommunity() {
