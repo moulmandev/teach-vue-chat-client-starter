@@ -62,6 +62,7 @@
         v-bind:class="{selected: isSelected(conversation)}"
         @click="openConversation(conversation.id)"
       >
+      
         <a class="avatar">
           <img :src="getConversationPicture(conversation)"/>
         </a>
@@ -70,7 +71,8 @@
             <div class="title">
               <i class="ui small icon circle"> </i>{{ conversation.title }}
             </div>
-            <span class="time">{{ conversation.updated_at.toLocaleString() }}</span>
+            <span class="time">{{ dateFormat(conversation.updated_at).toString()}}</span>
+
           </div>
           <div class="text">{{ getMessageContent(conversation.messages) }}</div>
         </div>
@@ -94,8 +96,9 @@ export default {
   methods: {
     ...mapActions(["deauthenticate"]),
       orderedMessages(){
-        console.log((Object.values(this.conversations)).sort((a, b) => new Date(a.updated_at).getTime() < new Date(b.updated_at).getTime()));
-        return (Object.values(this.conversations)).sort((a, b) => new Date(a.updated_at).getTime() < new Date(b.updated_at).getTime());
+        console.log("la date de la MAJ est le "+  Date.parse(this.conversations[1].updated_at));
+        console.log((Object.values(this.conversations)).sort((a, b) =>  Date.parse(a.updated_at) <  Date.parse(b.updated_at)));
+        return (this.conversations).sort((a, b) => (Date.parse(b.updated_at) - (Date.parse(a.updated_at) )));
       },
     openCommunity() {
       router.push({ name: "Community" });
@@ -130,6 +133,9 @@ export default {
       }
       else
         return false;
+    },
+    dateFormat(date){
+      return new Date(date).toLocaleString('fr-FR', { timeZone: 'UTC' });
     }
   },
   computed: {

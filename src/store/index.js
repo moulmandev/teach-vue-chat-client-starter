@@ -10,12 +10,12 @@ export default new Vuex.Store({
     user: {
       username: null,
       token: null,
-      picture_url: null
+      picture_url: null,
     },
     users: [],
     conversations: [],
     currentConversationId: null,
-    usersAvailable: []
+    usersAvailable: [],
   },
   getters: {
     authenticating(state) {
@@ -28,20 +28,24 @@ export default new Vuex.Store({
       return state.user;
     },
     users(state) {
-      return state.users.filter(user => user.username !== state.user.username);
+      return state.users.filter(
+        (user) => user.username !== state.user.username
+      );
     },
 
     conversations(state) {
-      return state.conversations.filter(conversation =>
+      return state.conversations.filter((conversation) =>
         conversation.participants.includes(state.user.username)
       );
     },
 
     conversation(state, getters) {
-      return state.conversations.filter(conversation =>
-          conversation.id === state.currentConversationId
-      ).at(0);
-    }
+      return state.conversations
+        .filter(
+          (conversation) => conversation.id === state.currentConversationId
+        )
+        .at(0);
+    },
   },
   mutations: {
     syncCurrentConversation(state, conversationId) {
@@ -65,36 +69,40 @@ export default new Vuex.Store({
 
     upsertUser(state, { user }) {
       const localUserIndex = state.users.findIndex(
-        _user => _user.username === user.username
+        (_user) => _user.username === user.username
       );
 
       if (localUserIndex !== -1) {
         Vue.set(state.users, localUserIndex, user);
       } else {
         state.users.push({
-          ...user
+          ...user,
         });
       }
     },
 
     upsertConversation(state, { conversation }) {
       const localConversationIndex = state.conversations.findIndex(
-        _conversation => _conversation.id === conversation.id
+        (_conversation) => _conversation.id === conversation.id
       );
 
       if (localConversationIndex !== -1) {
         Vue.set(state.conversations, localConversationIndex, conversation);
       } else {
         state.conversations.push({
-          ...conversation
+          ...conversation,
         });
       }
     },
 
     addMessage(state, { conversation_id, message }) {
-      const conv = state.conversations.find(conversation => conversation.id === conversation_id);
-      conv.messages.push(message);
-      this.upsertConversation(state, conv);
+      const conv = state.conversations.find(
+        (conversation) => conversation.id === conversation_id
+      );
+      if (conv) {
+        conv.messages.push(message);
+        // this.upsertConversation(state, conv); // pas besoin
+      }
     },
   },
   actions: {
@@ -105,7 +113,7 @@ export default new Vuex.Store({
       commit("setAuthenticating", true);
       Vue.prototype.$client
         .authenticate(username, password)
-        .then(user => {
+        .then((user) => {
           commit("setUser", user);
           localStorage.setItem("username", username);
           localStorage.setItem("password", password);
@@ -163,7 +171,7 @@ export default new Vuex.Store({
 
         router.push({
           name: "Conversation",
-          params: { id: conversation.id }
+          params: { id: conversation.id },
         });
       });
 
@@ -182,11 +190,11 @@ export default new Vuex.Store({
 
         router.push({
           name: "Conversation",
-          params: { id: conversation.id }
+          params: { id: conversation.id },
         });
       });
 
       return promise;
-    }
-  }
+    },
+  },
 });
