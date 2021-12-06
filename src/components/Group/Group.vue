@@ -3,86 +3,48 @@
     <div class="ui fluid search">
       <div class="ui icon input">
         <input
-          type="text"
-          placeholder="Rechercher un utilisateur"
-          class="prompt"
+            type="text"
+            placeholder="Rechercher un utilisateur"
+            class="prompt"
         /><i class="search icon"></i>
       </div>
     </div>
     <div class="spanner">
-      <hr />
+      <hr/>
       <span>Participants</span>
-      <hr />
+      <hr/>
     </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/mK_sjD0FrXw/100x100" /><span
-        >Alice<br /><i class="nickname"></i></span
-      ><i title="Modifier le surnom" class="circular quote left link icon"></i
-      ><i
-        title="Enlever de la conversation"
-        class="circular times icon link"
-        style=""
-      ></i>
+
+    <div class="user"
+        v-for="participant in conversation.participants"
+        :key="participant.id"
+    >
+      <img :src="getUserByName(participant).picture_url"/>
+      <span>{{ participant }}<br/><i class="nickname"></i></span>
+      <i title="Modifier le surnom" class="circular quote left link icon"></i>
+      <i title="Enlever de la conversation" class="circular times icon link" style=""></i>
     </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/7omHUGhhmZ0/100x100" /><span
-        >Bob<br /><i class="nickname"></i></span
-      ><i title="Modifier le surnom" class="circular quote left link icon"></i
-      ><i
-        title="Enlever de la conversation"
-        class="circular times icon link"
-        style=""
-      ></i>
-    </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/FUcupae92P4/100x100" /><span
-        >Derek<br /><i class="nickname"></i></span
-      ><i title="Modifier le surnom" class="circular quote left link icon"></i
-      ><i
-        title="Enlever de la conversation"
-        class="circular times icon link"
-      ></i>
-    </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/OYH7rc2a3LA/100x100" /><span
-        >Gael<br /><i class="nickname"></i></span
-      ><i title="Modifier le surnom" class="circular quote left link icon"></i
-      ><i
-        title="Enlever de la conversation"
-        class="circular times icon link"
-        style=""
-      ></i>
-    </div>
+
     <div class="spanner">
-      <hr />
+      <hr/>
       <span>Communauté</span>
-      <hr />
+      <hr/>
     </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/8wbxjJBrl3k/100x100" /><span
-        >Cha</span
-      ><i title="Ajouter à la conversation" class="circular plus icon link"></i>
+
+    <div class="user"
+         v-for="other in otherPeoples"
+         :key="other.id"
+    >
+      <img :src="other.picture_url"/>
+      <span>{{ other.username }}</span>
+      <i title="Ajouter à la conversation" class="circular plus icon link"></i>
     </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/4U1x6459Q-s/100x100" /><span
-        >Emilio</span
-      ><i title="Ajouter à la conversation" class="circular plus icon link"></i>
-    </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/3402kvtHhOo/100x100" /><span
-        >Fabrice</span
-      ><i title="Ajouter à la conversation" class="circular plus icon link"></i>
-    </div>
-    <div class="user">
-      <img src="https://source.unsplash.com/tNCH0sKSZbA/100x100" /><span
-        >Benji</span
-      ><i title="Ajouter à la conversation" class="circular plus icon link"></i>
-    </div>
+
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
 export default {
   name: "Group",
@@ -91,13 +53,34 @@ export default {
       search: ""
     };
   },
+  watch: {
+    conversation: {
+      immediate: true,
+      handler: function() {
+        console.log("handler group : ", this.conversation);
+      }
+    },
+  },
+  created() {
+    console.log("created group ", this.conversation);
+  },
   computed: {
-    ...mapGetters([])
+    ...mapGetters(["conversation", "user", "users"]),
+
+    otherPeoples() {
+      return this.users.filter((item) => {
+        return !this.conversation.participants.includes(item.username);
+      });
+    },
   },
   methods: {
-    ...mapActions([])
+    ...mapActions([]),
+
+    getUserByName(name) {
+      return this.users.filter(user => user.username === name).at(0);
+    },
   }
 };
 </script>
 
-<style src="./Group.css" scoped />
+<style src="./Group.css" scoped/>
