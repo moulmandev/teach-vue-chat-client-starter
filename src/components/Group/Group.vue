@@ -3,6 +3,7 @@
     <div class="ui fluid search">
       <div class="ui icon input">
         <input
+            v-model="search"
             type="text"
             placeholder="Rechercher un utilisateur"
             class="prompt"
@@ -16,7 +17,7 @@
     </div>
 
     <div class="user"
-        v-for="participant in conversation.participants"
+        v-for="participant in getParticipants"
         :key="participant.id"
     >
       <img :src="getUserByName(participant).picture_url"/>
@@ -32,7 +33,7 @@
     </div>
 
     <div class="user"
-         v-for="other in otherPeoples"
+         v-for="other in getOtherPeoples"
          :key="other.id"
     >
       <img :src="other.picture_url"/>
@@ -67,9 +68,15 @@ export default {
   computed: {
     ...mapGetters(["conversation", "user", "users"]),
 
-    otherPeoples() {
+    getParticipants() {
+      return this.conversation.participants.filter((participant) => {
+        return participant.includes(this.search);
+      });
+    },
+
+    getOtherPeoples() {
       return this.users.filter((item) => {
-        return !this.conversation.participants.includes(item.username);
+        return !this.conversation.participants.includes(item.username) && item.username.includes(this.search);
       });
     },
   },
