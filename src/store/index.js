@@ -30,7 +30,9 @@ export default new Vuex.Store({
     users(state) {
       return state.users;
     },
-
+    usersAvailable(state) {
+      return state.usersAvailable;
+    },
     conversations(state) {
       return state.conversations.filter(conversation =>
         conversation.participants.includes(state.user.username)
@@ -75,6 +77,10 @@ export default new Vuex.Store({
           ...user
         });
       }
+    },
+
+    upsertAvailableUsers(state, { usernames }) {
+      state.usersAvailable = usernames;
     },
 
     upsertConversation(state, { conversation }) {

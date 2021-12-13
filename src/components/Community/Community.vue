@@ -16,7 +16,7 @@
     </div>
     <div class="users">
       <div
-        v-bind:class="{ selected: selectedUsers.includes(user) }"
+        v-bind:class="{ selected: selectedUsers.includes(user), available: usersAvailable.includes(user.username)}"
         v-for="user in getUserSearched()"
         :key="user.username"
         class="user"
@@ -85,7 +85,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["users"])
+    ...mapGetters(["users", "usersAvailable"]),
   }
 };
 </script>
