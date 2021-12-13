@@ -38,7 +38,7 @@
     >
       <img :src="other.picture_url"/>
       <span>{{ other.username }}</span>
-      <i title="Ajouter à la conversation" class="circular plus icon link"></i>
+      <i title="Ajouter à la conversation" class="circular plus icon link" @click="addUser(other.username)"></i>
     </div>
 
   </div>
@@ -81,7 +81,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions([]),
+    ...mapActions(["addParticipant"]),
+
+    addUser(username) {
+      this.addParticipant({
+        conversation_id: this.conversation.id,
+        username: username
+      });
+    },
 
     getUserByName(name) {
       return this.users.filter(user => user.username === name).at(0);

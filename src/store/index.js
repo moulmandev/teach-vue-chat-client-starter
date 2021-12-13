@@ -38,9 +38,6 @@ export default new Vuex.Store({
     },
 
     conversation(state, getters) {
-      console.log("toto : " + state.conversations.filter(conversation =>
-          conversation.id === state.currentConversationId
-      ).at(0));
       return state.conversations.filter(conversation =>
           conversation.id === state.currentConversationId
       ).at(0);
@@ -155,12 +152,15 @@ export default new Vuex.Store({
     },
 
     postMessage({ commit }, { conversation_id, content }) {
-      console.log({ conversation_id, content });
       Vue.prototype.$client
         .postMessage(conversation_id, content)
         .then(({ message }) => {
           commit("upsertMessages", conversation_id, message);
         });
+    },
+
+    addParticipant({ commit }, { conversation_id, username }) {
+      Vue.prototype.$client.addParticipant(conversation_id, username);
     },
 
     createOneToOneConversation({ commit }, username) {
