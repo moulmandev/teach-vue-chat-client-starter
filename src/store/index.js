@@ -163,6 +163,10 @@ export default new Vuex.Store({
       Vue.prototype.$client.addParticipant(conversation_id, username);
     },
 
+    removeParticipant({ commit }, { conversation_id, username }) {
+      Vue.prototype.$client.removeParticipant(conversation_id, username);
+    },
+
     createOneToOneConversation({ commit }, username) {
       const promise = Vue.prototype.$client.getOrCreateOneToOneConversation(
         username

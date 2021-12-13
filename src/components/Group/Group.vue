@@ -23,7 +23,7 @@
       <img :src="getUserByName(participant).picture_url"/>
       <span>{{ participant }}<br/><i class="nickname"></i></span>
       <i title="Modifier le surnom" class="circular quote left link icon"></i>
-      <i title="Enlever de la conversation" class="circular times icon link" style=""></i>
+      <i title="Enlever de la conversation" class="circular times icon link" style="" @click="removeUser(participant)"></i>
     </div>
 
     <div class="spanner">
@@ -81,13 +81,22 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["addParticipant"]),
+    ...mapActions(["addParticipant", "removeParticipant"]),
 
     addUser(username) {
       this.addParticipant({
         conversation_id: this.conversation.id,
         username: username
       });
+    },
+
+    removeUser(username) {
+      if (this.conversation.participants.length > 3) {
+        this.removeParticipant({
+          conversation_id: this.conversation.id,
+          username: username
+        });
+      }
     },
 
     getUserByName(name) {
