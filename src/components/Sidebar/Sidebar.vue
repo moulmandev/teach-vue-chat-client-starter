@@ -49,17 +49,16 @@
         </div>
       </div>
 
-<!--      TODO: implements class with v-bind  -->
-      <!--      // available-->
-      <!--      // new-->
-      <!--      // selected-->
-
       <div
         v-for="conversation in orderedMessages()"
         :key="conversation.id"
         class="conversation"
         :title="conversation.title"
-        v-bind:class="{selected: isSelected(conversation)}"
+        v-bind:class="{
+          available: isSomeoneOnline(conversation),
+          selected: isSelected(conversation),
+          new: isThereSomethingNew(conversation)
+        }"
         @click="openConversation(conversation.id)"
       >
       
@@ -150,10 +149,16 @@ export default {
     },
     dateFormat(date){
       return new Date(date).toLocaleString('fr-FR', { timeZone: 'UTC' });
+    },
+    isSomeoneOnline(conversation) {
+      return this.usersAvailable.some(x => (conversation.participants.includes(x) && x != this.user.username))
+    },
+    isThereSomethingNew(conversation) {
+      console.log(conversation);
     }
   },
   computed: {
-    ...mapGetters(["user", "conversations", "users"]),
+    ...mapGetters(["user", "conversations", "users", "usersAvailable"]),
   },
 };
 </script>

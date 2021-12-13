@@ -108,6 +108,7 @@ export default new Vuex.Store({
             ...message
           });
         }
+        state.conversations[localConversationIndex].updated_at = new Date().toISOString();
       }
     },
   },
