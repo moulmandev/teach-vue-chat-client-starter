@@ -40,6 +40,7 @@
         <div class="ui fluid search">
           <div class="ui icon input">
             <input
+              v-model="searchContent"
               class="prompt"
               placeholder="Rechercher une conversation"
               type="text"
@@ -65,7 +66,7 @@
         <a class="avatar">
           <img :src="getConversationPicture(conversation)"/>
         </a>
-        <div class="content">
+        <div>
           <div class="metadata">
             <div class="title">
               <i class="ui small icon circle"> </i><span v-if="conversation.type === 'one_to_one'">{{ getConversationOneToOne(conversation) }}</span>
@@ -89,14 +90,22 @@ export default {
   name: "Sidebar",
   data() {
     return {
-      search: "",
+      searchContent: "",
       conversationClicked : null
     };
   },
   methods: {
     ...mapActions(["deauthenticate"]),
       orderedMessages(){
-        return (this.conversations).sort((a, b) => (Date.parse(b.updated_at) - (Date.parse(a.updated_at) )));
+        let sortedArray = (this.conversations).sort((a, b) => (Date.parse(b.updated_at) - (Date.parse(a.updated_at) )));
+        
+        if(this.searchContent === ""){
+          return sortedArray;
+        }
+        return sortedArray.filter((searched) => {
+          let participants = searched.participants.join(',').toLowerCase();
+          return participants.includes(this.searchContent.toLowerCase());
+        }); 
       },
     openCommunity() {
       router.push({ name: "Community" });

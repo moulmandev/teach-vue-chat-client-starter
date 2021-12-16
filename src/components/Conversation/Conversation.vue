@@ -142,7 +142,7 @@
           <div class="wrapper">
             <p>
               <i title="Abandonner" class="circular times small icon link"></i>
-              Répondre à Alice
+              Répondre à {{ getConversationOneToOne(conversation) }} <!-- Afficher le message -->
               <span>
                 On peut même éditer ou supprimer des messages !
               </span>
@@ -206,7 +206,6 @@ export default {
       });
       this.messageContent = "";
     },
-
     getUserByName(name) {
       return this.users.filter(user => user.username === name).at(0);
     },
