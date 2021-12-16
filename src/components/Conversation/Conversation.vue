@@ -93,7 +93,7 @@
               <div class="time">{{ message.posted_at }}</div>
                 <div v-bind:class="{mine: message.from === user.username }" class="message">
                     <img v-if="message.from !== user.username" :title="message.from" :src="getUserByName(message.from).picture_url"/>
-                  <div v-if="message.deleted" class="delete">{{ message.content = "Vous avez suprimé un message" }}</div>
+                  <div v-if="message.deleted" class="delete">{{ message.content = "Message suprimé" }}</div>
                   <div v-else class="bubble top bottom">{{ message.content }}</div>
 
                   <div class="reacts"></div>
@@ -203,7 +203,6 @@ export default {
       });
       this.messageContent = "";
     },
-<<<<<<< HEAD
     deleteMess(message){
       this.deleteMessage({
         conversation_id: this.conversation.id,
@@ -211,8 +210,6 @@ export default {
       });
     },
 
-=======
->>>>>>> be50211977e7ac5c5f39ca0c58bfb6f0b5c85aee
     getUserByName(name) {
       return this.users.filter(user => user.username === name).at(0);
     },
