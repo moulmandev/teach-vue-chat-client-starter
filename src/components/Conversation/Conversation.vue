@@ -91,43 +91,40 @@
           <div class="wrapper">
             <label v-for="message in conversation.messages" :key="message.id">
               <div class="time">{{ message.posted_at }}</div>
-              <div
-                v-bind:class="{ mine: message.from === user.username }"
-                class="message"
-              >
-                <img
-                  v-if="message.from !== user.username"
-                  :title="message.from"
-                  :src="getUserByName(message.from).picture_url"
-                />
-                <div class="bubble top bottom">{{ message.content }}</div>
+                <div v-bind:class="{mine: message.from === user.username }" class="message">
+                    <img v-if="message.from !== user.username" :title="message.from" :src="getUserByName(message.from).picture_url"/>
+                  <div v-if="message.deleted" class="delete">{{ message.content = "Vous avez suprimé un message" }}</div>
+                  <div v-else class="bubble top bottom">{{ message.content }}</div>
 
-                <div class="reacts"></div>
-                <div v-if="message.from !== user.username" class="controls">
-                  <i title="Répondre" class="circular reply icon"></i>
-                  <span class="react">
-                    <i title="Aimer" class="circular heart outline icon"></i>
-                    <i
-                      title="Pouce en l'air"
-                      class="circular thumbs up outline icon"
-                    ></i>
-                    <i title="Content" class="circular smile outline icon"></i>
-                    <i
-                      title="Pas content"
-                      class="circular frown outline icon"
-                    ></i>
-                  </span>
-                </div>
+                  <div class="reacts"></div>
+                    <div v-if="message.from !== user.username" class="controls">
+                      <i title="Répondre" class="circular reply icon"></i>
+                      <span class="react">
+                        <i title="Aimer" class="circular heart outline icon"></i>
+                        <i title="Pouce en l'air" class="circular thumbs up outline icon"></i>
+                        <i title="Content" class="circular smile outline icon"></i>
+                        <i title="Pas content" class="circular frown outline icon"></i>
+                      </span>
+                    </div>
 
-                <div
-                  v-else-if="message.from === user.username"
-                  class="controls"
-                >
-                  <i title="Supprimer" class="circular trash icon"></i>
-                  <i title="Editer" class="circular edit icon"></i>
-                  <i title="Répondre" class="circular reply icon"></i>
-                </div>
-              </div>
+                    <div v-else-if="message.from === user.username"  class="controls">
+                     
+                      <i title="Supprimer" class="circular trash icon" @click="deleteMess(message)">
+                          <!-- conversation_id, message_id -->
+                          <!-- 
+                            this.removeParticipant({
+                            conversation_id: this.conversation.id,
+                            username: username
+                          }); -->
+                        <!-- TODO DELETE -->
+                        <!-- $client.on('messageDeleted') -->
+                      </i>
+                      <i title="Editer" class="circular edit icon"></i>
+                      <i title="Répondre" class="circular reply icon"></i>
+                    </div>
+                  </div>
+
+              
             </label>
           </div>
         </div>
@@ -197,7 +194,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["postMessage"]),
+    ...mapActions(["postMessage","deleteMessage"]),
 
     sendMessage() {
       this.postMessage({
@@ -206,12 +203,18 @@ export default {
       });
       this.messageContent = "";
     },
+    deleteMess(message){
+      this.deleteMessage({
+        conversation_id: this.conversation.id,
+        message_id: message.id
+      });
+    },
 
     getUserByName(name) {
       return this.users.filter(user => user.username === name).at(0);
     },
     getConversationPicture(conversation) {
-      if (conversation.participants.length === 2) {
+      if (conversation.participants.length === 2 && conversation.participants[0] !== conversation.participants[1]) {
         let other = conversation.participants.find(
           participant => participant !== this.user.username
         );
@@ -219,7 +222,7 @@ export default {
       }
     },
     getConversationOneToOne(conversation) {
-      if (conversation.participants.length === 2) {
+      if (conversation.participants.length === 2 && conversation.participants[0] !== conversation.participants[1]) {
         let other = conversation.participants.find(
           participant => participant !== this.user.username
         );

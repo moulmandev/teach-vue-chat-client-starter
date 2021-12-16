@@ -19,7 +19,7 @@ export default function install(Vue, store) {
   if (username && password) {
     store.dispatch("authenticate", {
       username,
-      password
+      password,
     });
   }
 
@@ -60,7 +60,7 @@ export default function install(Vue, store) {
   });
 
   client.on("messageDeleted", async ({ conversation_id, message_id }) => {
-    //TODO
+    store.commit("upsertMessagesId", { conversation_id, message_id });
   });
 
   client.on("usersAvailable", async ({ usernames }) => {

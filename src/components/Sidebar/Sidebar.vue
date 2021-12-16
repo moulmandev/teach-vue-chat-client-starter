@@ -112,7 +112,7 @@ export default {
       return this.users.find(user => user.username === name);
     },
     getConversationPicture(conversation) {
-      if (conversation.participants.length === 2) {
+      if (conversation.participants.length === 2 && conversation.participants[0] !== conversation.participants[1]) {
         let other = conversation.participants.find(participant => participant !== this.user.username);
         return this.getUserByName(other).picture_url;
       } else {
@@ -129,7 +129,7 @@ export default {
       }
     },
     getConversationOneToOne(conversation){
-        if (conversation.participants.length === 2) {
+        if (conversation.participants.length === 2 && conversation.participants[0] !== conversation.participants[1]) {
           let other = conversation.participants.find(participant => participant !== this.user.username);
           return this.getUserByName(other).username;
         }
@@ -154,7 +154,6 @@ export default {
       return this.usersAvailable.some(x => (conversation.participants.includes(x) && x != this.user.username))
     },
     isThereSomethingNew(conversation) {
-      console.log(conversation);
     }
   },
   computed: {

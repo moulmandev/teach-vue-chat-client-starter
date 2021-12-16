@@ -10,12 +10,12 @@ export default new Vuex.Store({
     user: {
       username: null,
       token: null,
-      picture_url: null
+      picture_url: null,
     },
     users: [],
     conversations: [],
     currentConversationId: null,
-    usersAvailable: []
+    usersAvailable: [],
   },
   getters: {
     authenticating(state) {
@@ -34,16 +34,18 @@ export default new Vuex.Store({
       return state.usersAvailable;
     },
     conversations(state) {
-      return state.conversations.filter(conversation =>
+      return state.conversations.filter((conversation) =>
         conversation.participants.includes(state.user.username)
       );
     },
 
     conversation(state, getters) {
-      return state.conversations.filter(conversation =>
-          conversation.id === state.currentConversationId
-      ).at(0);
-    }
+      return state.conversations
+        .filter(
+          (conversation) => conversation.id === state.currentConversationId
+        )
+        .at(0);
+    },
   },
   mutations: {
     syncCurrentConversation(state, conversationId) {
@@ -67,14 +69,14 @@ export default new Vuex.Store({
 
     upsertUser(state, { user }) {
       const localUserIndex = state.users.findIndex(
-        _user => _user.username === user.username
+        (_user) => _user.username === user.username
       );
 
       if (localUserIndex !== -1) {
         Vue.set(state.users, localUserIndex, user);
       } else {
         state.users.push({
-          ...user
+          ...user,
         });
       }
     },
@@ -85,30 +87,67 @@ export default new Vuex.Store({
 
     upsertConversation(state, { conversation }) {
       const localConversationIndex = state.conversations.findIndex(
-        _conversation => _conversation.id === conversation.id
+        (_conversation) => _conversation.id === conversation.id
       );
 
       if (localConversationIndex !== -1) {
         Vue.set(state.conversations, localConversationIndex, conversation);
       } else {
         state.conversations.push({
-          ...conversation
+          ...conversation,
         });
       }
     },
 
     upsertMessages(state, { conversation_id, message }) {
-      const localConversationIndex = state.conversations.findIndex(_conversation => _conversation.id === conversation_id);
+      const localConversationIndex = state.conversations.findIndex(
+        (_conversation) => _conversation.id === conversation_id
+      );
       if (localConversationIndex !== -1) {
-        const localMessageIndex = state.conversations[localConversationIndex].messages.findIndex(_message => _message.id === message.id);
+        const localMessageIndex = state.conversations[
+          localConversationIndex
+        ].messages.findIndex((_message) => _message.id === message.id);
         if (localMessageIndex !== -1) {
-          Vue.set(state.conversations[localConversationIndex].messages, localMessageIndex, message);
+          Vue.set(
+            state.conversations[localConversationIndex].messages,
+            localMessageIndex,
+            message
+          );
         } else {
           state.conversations[localConversationIndex].messages.push({
-            ...message
+            ...message,
           });
         }
-        state.conversations[localConversationIndex].updated_at = new Date().toISOString();
+        state.conversations[
+          localConversationIndex
+        ].updated_at = new Date().toISOString();
+      }
+    },
+    upsertMessagesId(state, { conversation_id, message_id }) {
+      const localConversationIndex = state.conversations.findIndex(
+        (_conversation) => _conversation.id === conversation_id
+      );
+      if (localConversationIndex !== -1) {
+        const localMessage = state.conversations[
+          localConversationIndex
+        ].messages.find((_message) => _message.id === message_id);
+        const localMessageIndex = state.conversations[
+          localConversationIndex
+        ].messages.indexOf(localMessage);
+
+        if (localMessageIndex !== -1) {
+          localMessage.deleted = true;
+          Vue.set(
+            state.conversations[localConversationIndex].messages,
+            localMessageIndex,
+            localMessage
+          );
+        } else {
+          state.conversations[localConversationIndex].messages.splice(
+            message_id,
+            1
+          );
+        }
       }
     },
   },
@@ -121,7 +160,7 @@ export default new Vuex.Store({
       commit("setAuthenticating", true);
       Vue.prototype.$client
         .authenticate(username, password)
-        .then(user => {
+        .then((user) => {
           commit("setUser", user);
           localStorage.setItem("username", username);
           localStorage.setItem("password", password);
@@ -173,6 +212,9 @@ export default new Vuex.Store({
     removeParticipant({ commit }, { conversation_id, username }) {
       Vue.prototype.$client.removeParticipant(conversation_id, username);
     },
+    deleteMessage({ commit }, { conversation_id, message_id }) {
+      Vue.prototype.$client.deleteMessage(conversation_id, message_id);
+    },
 
     createOneToOneConversation({ commit }, username) {
       const promise = Vue.prototype.$client.getOrCreateOneToOneConversation(
@@ -186,7 +228,7 @@ export default new Vuex.Store({
 
         router.push({
           name: "Conversation",
-          params: { id: conversation.id }
+          params: { id: conversation.id },
         });
       });
 
@@ -205,11 +247,11 @@ export default new Vuex.Store({
 
         router.push({
           name: "Conversation",
-          params: { id: conversation.id }
+          params: { id: conversation.id },
         });
       });
 
       return promise;
-    }
-  }
+    },
+  },
 });
