@@ -139,7 +139,7 @@
           <div class="wrapper">
             <p>
               <i title="Abandonner" class="circular times small icon link"></i>
-              Répondre à Alice
+              Répondre à {{ getConversationOneToOne(conversation) }} <!-- Afficher le message -->
               <span>
                 On peut même éditer ou supprimer des messages !
               </span>
@@ -203,6 +203,7 @@ export default {
       });
       this.messageContent = "";
     },
+<<<<<<< HEAD
     deleteMess(message){
       this.deleteMessage({
         conversation_id: this.conversation.id,
@@ -210,6 +211,8 @@ export default {
       });
     },
 
+=======
+>>>>>>> be50211977e7ac5c5f39ca0c58bfb6f0b5c85aee
     getUserByName(name) {
       return this.users.filter(user => user.username === name).at(0);
     },
