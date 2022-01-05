@@ -225,6 +225,14 @@ export default new Vuex.Store({
       Vue.prototype.$client.seeConversation(conversation_id, message_id);
     },
 
+    replyMessage({ commit }, { conversation, message_id, content }) {
+      Vue.prototype.$client.replyMessage(conversation.id, message_id, content);
+    },
+
+    reactMessage({ commit }, { conversation_id, message_id, reaction }) {
+      Vue.prototype.$client.reactMessage(conversation_id, message_id, reaction);
+    },
+
     createOneToOneConversation({ commit }, username) {
       const promise = Vue.prototype.$client.getOrCreateOneToOneConversation(
         username
