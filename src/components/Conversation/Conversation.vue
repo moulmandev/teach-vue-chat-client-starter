@@ -93,17 +93,25 @@
               <div class="time">{{ message.posted_at }}</div>
                 <div v-bind:class="{mine: message.from === user.username }" class="message">
                     <img v-if="message.from !== user.username" :title="message.from" :src="getUserByName(message.from).picture_url"/>
+
+                  <p v-if="message.reply_to" class="reply_content">{{ message.reply_to.content }}</p>
                   <div v-if="message.deleted" class="delete">{{ message.content = "Message suprimé" }}</div>
                   <div v-else class="bubble top bottom">{{ message.content }}</div>
 
-                  <div class="reacts"></div>
+                  <div class="reacts">
+                    <i v-if="getMessageRection(message, 'HEART')" title="Aimer" class="circular heart up outline icon">{{ getMessageRection(message, "HEART") }}</i>
+                    <i v-if="getMessageRection(message, 'THUMB')" title="Pouce en l'air" class="circular thumbs up outline icon">{{ getMessageRection(message, "THUMB") }}</i>
+                    <i v-if="getMessageRection(message, 'HAPPY')" title="Content" class="circular smile up outline icon">{{ getMessageRection(message, "HAPPY") }}</i>
+                    <i v-if="getMessageRection(message, 'SAD')" title="Pas content" class="circular frown up outline icon">{{ getMessageRection(message, "SAD") }}</i>
+                  </div>
+
                     <div v-if="message.from !== user.username" class="controls">
                       <i title="Répondre" class="circular reply icon"></i>
                       <span class="react">
-                        <i title="Aimer" class="circular heart outline icon"></i>
-                        <i title="Pouce en l'air" class="circular thumbs up outline icon"></i>
-                        <i title="Content" class="circular smile outline icon"></i>
-                        <i title="Pas content" class="circular frown outline icon"></i>
+                        <i title="Aimer" class="circular heart outline icon" @click="reactMess(conversation.id, message.id, 'HEART')"></i>
+                        <i title="Pouce en l'air" class="circular thumbs up outline icon" @click="reactMess(conversation.id, message.id, 'THUMB')"></i>
+                        <i title="Content" class="circular smile outline icon" @click="reactMess(conversation.id, message.id, 'HAPPY')"></i>
+                        <i title="Pas content" class="circular frown outline icon" @click="reactMess(conversation.id, message.id, 'SAD')"></i>
                       </span>
                     </div>
 
@@ -120,7 +128,7 @@
                         <!-- $client.on('messageDeleted') -->
                       </i>
                       <i title="Editer" class="circular edit icon" @click="updateEditingMessage(message)"></i>
-                      <i title="Répondre" class="circular reply icon"></i>
+                      <i title="Répondre" class="circular reply icon" @click="replyMess(message)"></i>
                     </div>
                   </div>
 
@@ -143,9 +151,9 @@
             </p>
             <p v-else>
               <i title="Abandonner" class="circular times small icon link"></i>
-              Répondre à {{ getConversationOneToOne(conversation) }} <!-- Afficher le message -->
+              Répondre à {{ reply.from }}
               <span>
-                On peut même éditer ou supprimer des messages !
+                {{ reply.content }}
               </span>
             </p>
 
@@ -210,9 +218,21 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["postMessage", "deleteMessage", "editMessage", "seeConversation"]),
+    ...mapActions(["postMessage", "deleteMessage", "editMessage", "seeConversation", "replyMessage", "reactMessage"]),
 
     sendMessage() {
+      if (this.reply != null)  {
+        this.replyMessage({
+          conversation: this.conversation,
+          message_id: this.reply.id,
+          content: this.messageContent
+        });
+
+        this.reply = null;
+        this.messageContent = "";
+        return;
+      }
+
       this.postMessage({
         conversation_id: this.conversation.id,
         content: this.messageContent
@@ -234,6 +254,21 @@ export default {
       // content = localMessage.content;
       }
       
+    },
+    replyMess(message) {
+      this.reply = message;
+    },
+
+    reactMess(conversation_id, message_id, react) {
+      this.reactMessage({
+        conversation_id: conversation_id,
+        message_id: message_id,
+        reaction: react
+      });
+    },
+
+    getMessageRection(message, reaction) {
+      return Object.values(message.reactions).filter(react => react === reaction).length
     },
 
     editMess(content){
@@ -290,7 +325,7 @@ export default {
       }, 0);
     }
   },
-  
+
   watch: {
     // eslint-disable-next-line no-unused-vars
     conversation(newConversation, oldConversation) {
