@@ -119,7 +119,7 @@
                         <!-- TODO DELETE -->
                         <!-- $client.on('messageDeleted') -->
                       </i>
-                      <i title="Editer" class="circular edit icon"></i>
+                      <i title="Editer" class="circular edit icon" @click="editMess(message)"></i>
                       <i title="Répondre" class="circular reply icon"></i>
                     </div>
                   </div>
@@ -194,7 +194,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["postMessage","deleteMessage"]),
+    ...mapActions(["postMessage", "deleteMessage", "editMessage", "seeConversation"]),
 
     sendMessage() {
       this.postMessage({
@@ -207,6 +207,13 @@ export default {
       this.deleteMessage({
         conversation_id: this.conversation.id,
         message_id: message.id
+      });
+    },
+    editMess(message, content){
+      this.editMessage({
+        conversation_id: this.conversation.id,
+        message_id: message.id,
+        content: content
       });
     },
 
@@ -249,10 +256,16 @@ export default {
       }, 0);
     }
   },
+  
   watch: {
     // eslint-disable-next-line no-unused-vars
     conversation(newConversation, oldConversation) {
       this.scrollBottom();
+
+      this.seeConversation({
+        conversation_id: newConversation.id,
+        message_id: newConversation.messages[newConversation.messages.length - 1].id
+      });
     }
   }
 };

@@ -212,8 +212,17 @@ export default new Vuex.Store({
     removeParticipant({ commit }, { conversation_id, username }) {
       Vue.prototype.$client.removeParticipant(conversation_id, username);
     },
+
     deleteMessage({ commit }, { conversation_id, message_id }) {
       Vue.prototype.$client.deleteMessage(conversation_id, message_id);
+    },
+
+    editMessage({ commit }, { conversation_id, message_id, content }) {
+      Vue.prototype.$client.editMessage(conversation_id, message_id, content);
+    },
+
+    seeConversation({ commit }, { conversation_id, message_id }) {
+      Vue.prototype.$client.seeConversation(conversation_id, message_id);
     },
 
     createOneToOneConversation({ commit }, username) {
