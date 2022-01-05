@@ -150,6 +150,7 @@
               Edition 
             </p>
             <p v-else>
+            <p v-if="reply">
               <i title="Abandonner" class="circular times small icon link"></i>
               Répondre à {{ reply.from }}
               <span>
@@ -201,7 +202,8 @@ export default {
       messageContent: "",
       groupPanel: false,
       editing: false,
-      idMessageEdited: ""
+      idMessageEdited: "",
+      reply: null,
     };
   },
   mounted() {
