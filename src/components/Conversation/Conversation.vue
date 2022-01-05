@@ -119,7 +119,7 @@
                         <!-- TODO DELETE -->
                         <!-- $client.on('messageDeleted') -->
                       </i>
-                      <i title="Editer" class="circular edit icon" @click="editMess(message)"></i>
+                      <i title="Editer" class="circular edit icon" @click="updateEditingMessage(message)"></i>
                       <i title="Répondre" class="circular reply icon"></i>
                     </div>
                   </div>
@@ -137,7 +137,11 @@
 
         <div class="conversation-footer">
           <div class="wrapper">
-            <p>
+            <p v-if="editing === true">
+              <i title="Abandonner" class="circular times small icon link" @click="resetEdit()"></i>
+              Edition 
+            </p>
+            <p v-else>
               <i title="Abandonner" class="circular times small icon link"></i>
               Répondre à {{ getConversationOneToOne(conversation) }} <!-- Afficher le message -->
               <span>
@@ -148,13 +152,23 @@
             <div class="ui fluid search">
               <div class="ui icon input">
                 <input
+                  v-if="this.editing === true"
+                  v-model="messageContent"
+                  class="prompt"
+                  type="text"
+                  placeholder="Rédiger un message"
+                  @keyup.enter="editMess(messageContent)"
+                />
+                <input
+                v-else
                   v-model="messageContent"
                   class="prompt"
                   type="text"
                   placeholder="Rédiger un message"
                   @keyup.enter="sendMessage()"
                 />
-                <i class="send icon" @click="sendMessage()"></i>
+                <i v-if="this.editing === true" class="send icon" @click="editMess(this.messageContent)"></i>
+                <i v-else  class="send icon" @click="sendMessage()"></i>
               </div>
             </div>
           </div>
@@ -177,7 +191,9 @@ export default {
   data() {
     return {
       messageContent: "",
-      groupPanel: false
+      groupPanel: false,
+      editing: false,
+      idMessageEdited: ""
     };
   },
   mounted() {
@@ -209,14 +225,32 @@ export default {
         message_id: message.id
       });
     },
-    editMess(message, content){
-      this.editMessage({
-        conversation_id: this.conversation.id,
-        message_id: message.id,
-        content: content
-      });
+    updateEditingMessage(localMessage){
+      if(!localMessage.deleted ){
+        console.log(localMessage)
+      this.editing = true;
+      this.idMessageEdited = localMessage.id;
+      this.messageContent = localMessage.content;
+      // content = localMessage.content;
+      }
+      
     },
 
+    editMess(content){
+      this.editMessage({
+        conversation_id: this.conversation.id,
+        message_id: this.idMessageEdited,
+        content: content,
+      });
+        this.editing = false;
+        this.messageContent = "";
+        console.log(this.editing);
+    },
+    resetEdit(){
+      this.editing = false;
+      this.messageContent = "";
+      this.idMessageEdited = "";
+    },
     getUserByName(name) {
       return this.users.filter(user => user.username === name).at(0);
     },

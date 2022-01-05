@@ -1,7 +1,7 @@
 import MetinetChatClient from "teach-vue-chat-client-library";
 
 const endpoint =
-  localStorage.getItem("server") || "wss://messenger.moulmandev.fr";
+  localStorage.getItem("server") || "wss://teach-vue-chat-server.glitch.me";
 
 export let client = new MetinetChatClient(endpoint);
 
