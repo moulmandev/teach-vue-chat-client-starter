@@ -7,6 +7,7 @@
             class="prompt"
             type="text"
             placeholder="Rechercher un message"
+            v-model="search"
           />
           <i class="search icon"></i>
         </div>
@@ -14,24 +15,18 @@
       </div>
     </div>
     <div class="conversations">
-      <div class="conversation" v-for="x in 10" :key="x">
-        <div class="author">
-          <template v-if="x % 2">
-            <img src="https://source.unsplash.com/7YVZYZeITc8/100x100" />
-            <span>Bob</span>
-          </template>
-          <template v-else>
-            <div class="avatar">M</div>
-            <span>Groupe : METINET</span>
-          </template>
+      <div class="conversation" v-for="conversation in searchConversations" :key="conversation.id">
+        <div class="author" v-if="conversation.searchResults">
+            <div class="avatar">
+              <i class="users icon img"></i>
+            </div>
+            <span>{{ conversation.title }}</span>
         </div>
-        <div class="messages" v-for="y in 3" :key="y">
+        <div class="messages" v-for="message in conversation.searchResults" :key="message.id">
           <div class="message">
-            <div class="time">14/07/2020 13:37</div>
+            <div class="time"> {{ message.posted_at }}</div>
             <div class="bubble">
-              Blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah
+              {{ message.content }}
             </div>
           </div>
         </div>
@@ -41,8 +36,28 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
-  name: "Search"
+  name: "Search",
+  data() {
+    return {
+      search: ""
+    };
+  },
+  computed: {
+    ...mapGetters(["user", "conversations"]),
+
+    searchConversations() {
+      let _conversations = [];
+      if (this.search == "") {
+        return this.conversations;
+      }
+      _conversations = this.conversations.map(conv => ({...conv, searchResults: conv.messages.filter(el => el.content && el.content.toLowerCase().includes(this.search.toLowerCase()))}));
+
+      return _conversations;
+    }
+  }
 };
 </script>
 
